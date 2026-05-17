@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>vertraut-mir — Content Management for OnlyPresi</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0a0a0a;
+      --surface: #111111;
+      --border: #1e1e1e;
+      --accent: #fe2c55;
+      --accent2: #25f4ee;
+      --text: #f0f0f0;
+      --muted: #666;
+      --mono: 'Space Mono', monospace;
+      --sans: 'Syne', sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* GRID BACKGROUND */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+      background-size: 48px 48px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 40px;
+      background: rgba(10,10,10,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo {
+      font-family: var(--mono);
+      font-size: 14px;
+      color: var(--accent2);
+      letter-spacing: 0.05em;
+    }
+
+    .logo span { color: var(--accent); }
+
+    nav a {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+      text-decoration: none;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+    nav a:hover { color: var(--text); }
+
+    /* HERO */
+    .hero {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 120px 40px 80px;
+      max-width: 900px;
+    }
+
+    .eyebrow {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--accent);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .eyebrow::before {
+      content: '';
+      display: block;
+      width: 32px;
+      height: 1px;
+      background: var(--accent);
+    }
+
+    h1 {
+      font-family: var(--sans);
+      font-size: clamp(48px, 8vw, 96px);
+      font-weight: 800;
+      line-height: 0.95;
+      letter-spacing: -0.03em;
+      margin-bottom: 32px;
+    }
+
+    h1 em {
+      font-style: normal;
+      color: var(--accent);
+    }
+
+    h1 .teal { color: var(--accent2); }
+
+    .hero-desc {
+      font-size: 18px;
+      color: #aaa;
+      line-height: 1.6;
+      max-width: 560px;
+      margin-bottom: 48px;
+      font-weight: 400;
+    }
+
+    .pill-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .pill {
+      font-family: var(--mono);
+      font-size: 11px;
+      padding: 8px 16px;
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+    }
+
+    .pill.active {
+      border-color: var(--accent2);
+      color: var(--accent2);
+    }
+
+    /* SCROLL INDICATOR */
+    .scroll-hint {
+      position: absolute;
+      bottom: 40px;
+      left: 40px;
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      animation: fadeUp 1s ease 0.8s both;
+    }
+
+    .scroll-hint::after {
+      content: '';
+      display: block;
+      width: 1px;
+      height: 40px;
+      background: var(--muted);
+      animation: grow 1.5s ease-in-out infinite;
+    }
+
+    @keyframes grow {
+      0%, 100% { transform: scaleY(0.3); opacity: 0.3; }
+      50% { transform: scaleY(1); opacity: 1; }
+    }
+
+    /* FEATURES SECTION */
+    section {
+      position: relative;
+      z-index: 1;
+      padding: 80px 40px;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .section-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 48px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+    }
+
+    .card {
+      background: var(--surface);
+      padding: 36px 32px;
+      transition: background 0.2s;
+    }
+
+    .card:hover { background: #161616; }
+
+    .card-icon {
+      font-size: 24px;
+      margin-bottom: 20px;
+      display: block;
+    }
+
+    .card h3 {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 10px;
+      letter-spacing: -0.01em;
+    }
+
+    .card p {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.6;
+      font-family: var(--mono);
+    }
+
+    /* PLATFORMS */
+    .platforms {
+      display: flex;
+      gap: 24px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-top: 48px;
+    }
+
+    .platform-badge {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--text);
+      padding: 12px 24px;
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .platform-badge .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent2);
+    }
+
+    /* LEGAL FOOTER */
+    .legal-bar {
+      position: relative;
+      z-index: 1;
+      border-top: 1px solid var(--border);
+      padding: 32px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: gap;
+      gap: 16px;
+    }
+
+    .legal-bar p {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .legal-bar a {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .legal-bar a:hover { color: var(--text); }
+
+    .legal-links { display: flex; gap: 24px; }
+
+    /* ANIMATIONS */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero > * {
+      animation: fadeUp 0.7s ease both;
+    }
+    .hero > *:nth-child(1) { animation-delay: 0.1s; }
+    .hero > *:nth-child(2) { animation-delay: 0.2s; }
+    .hero > *:nth-child(3) { animation-delay: 0.3s; }
+    .hero > *:nth-child(4) { animation-delay: 0.4s; }
+
+    /* ACCENT LINE TOP */
+    .accent-line {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      z-index: 200;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="accent-line"></div>
+
+  <nav>
+    <div class="logo">vertraut<span>-</span>mir</div>
+    <a href="mailto:pnurettin6@gmail.com">Contact</a>
+  </nav>
+
+  <div class="hero">
+    <div class="eyebrow">Internal Content Tool</div>
+    <h1>Content.<br><em>Automated.</em><br><span class="teal">OnlyPresi.</span></h1>
+    <p class="hero-desc">
+      vertraut-mir is an internal content management tool for the music artist OnlyPresi.
+      It coordinates short-form video publishing across authorized TikTok accounts via the TikTok Content Posting API.
+    </p>
+    <div class="pill-row">
+      <div class="pill active">TikTok API</div>
+      <div class="pill active">OAuth 2.0</div>
+      <div class="pill">Scheduled Uploads</div>
+      <div class="pill">Multi-Account</div>
+      <div class="pill">Internal Use Only</div>
+    </div>
+    <div class="scroll-hint">Scroll</div>
+  </div>
+
+  <section>
+    <div class="section-label">How it works</div>
+    <div class="cards">
+      <div class="card">
+        <span class="card-icon">🔐</span>
+        <h3>OAuth Authorization</h3>
+        <p>Each account owner authorizes access individually via TikTok's official OAuth 2.0 flow. No credentials are stored except access tokens.</p>
+      </div>
+      <div class="card">
+        <span class="card-icon">📅</span>
+        <h3>Scheduled Uploads</h3>
+        <p>Pre-produced short-form videos are queued and uploaded at planned intervals with duplicate-detection across a 24-hour window.</p>
+      </div>
+      <div class="card">
+        <span class="card-icon">🎵</span>
+        <h3>Artist-Focused</h3>
+        <p>Built exclusively for the OnlyPresi artist team. Manages official and authorized support accounts — not a public SaaS product.</p>
+      </div>
+      <div class="card">
+        <span class="card-icon">🛡️</span>
+        <h3>Privacy First</h3>
+        <p>No TikTok user data is collected beyond OAuth tokens required for uploads. Full Privacy Policy and Terms of Service apply.</p>
+      </div>
+    </div>
+
+    <div class="platforms">
+      <div class="platform-badge"><span class="dot"></span> TikTok Content Posting API</div>
+      <div class="platform-badge"><span class="dot"></span> YouTube Data API v3</div>
+      <div class="platform-badge"><span class="dot"></span> Internal Use · Not Public</div>
+    </div>
+  </section>
+
+  <div class="legal-bar">
+    <p>© 2026 vertraut-mir · Internal tool for OnlyPresi · pnurettin6@gmail.com</p>
+    <div class="legal-links">
+      <a href="https://max123466.github.io/vertraut-mir-legal/privacy">Privacy Policy</a>
+      <a href="https://max123466.github.io/vertraut-mir-legal/terms">Terms of Service</a>
+    </div>
+  </div>
+
+</body>
+</html>
